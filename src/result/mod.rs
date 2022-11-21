@@ -10,9 +10,9 @@ pub enum STATE {
 #[derive(Serialize)]
 pub struct ResData<T> {
     // 响应的状态
-    pub state: STATE,
+    state: STATE,
     // 响应的数据
-    pub data: T,
+    data: T,
 }
 
 impl<T: Serialize> ResData<T> {
@@ -20,8 +20,8 @@ impl<T: Serialize> ResData<T> {
     pub fn new(state: STATE, data: T) -> Self {
         ResData { state, data }
     }
-    // ResData转换成json
-    pub fn to_json(self) -> String {
-        serde_json::to_string(&self).unwrap()
-    }
+    // // ResData转换成json
+    // pub fn to_json(self) -> String {
+    //     serde_json::to_string(&self).unwrap()
+    // }
 }
