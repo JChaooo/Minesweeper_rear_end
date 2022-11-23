@@ -14,11 +14,12 @@ use actix_web::{
     http::{header::ContentType, StatusCode},
     post,
     web::{self, Json},
-    App, HttpResponse, HttpServer, Responder,
+    App, HttpRequest, HttpResponse, HttpServer, Responder,
 };
+use serde_json::Value;
 
 // IP,端口
-const SERVER: (&str, u16) = ("127.0.0.1", 8080);
+const SERVER: (&str, u16) = ("192.168.73.22", 8090);
 
 #[get("/hello/{name}")]
 pub async fn greet(name: web::Path<String>) -> impl Responder {
@@ -32,17 +33,19 @@ pub async fn index() -> HttpResponse {
         .body(serde_json::to_string(&res_data).unwrap())
 }
 
-
 /// TODO 这些请求api的函数体只是为了测试接口，具体实现要写在别处
-/// 
-/// 
-
-
+///
+///
 
 // 用户登录
 // 接收Json对象，注意要使用.service()注册到APP里面去
 #[post("/login")]
-pub async fn login(user: Json<User>) -> HttpResponse {
+pub async fn login(request: HttpRequest, user: web::Json<Value>) -> HttpResponse {
+    // pub async fn login(user: web::Json<Value>) -> HttpResponse {
+    println!("user是:{:?}", user);
+    println!("user是:{:?}", request);
+    let user_id = user.get("id").unwrap();
+    println!("UserId是：{}", user_id);
     // TODO 以下三行代码可以尝试使用宏来复用
     HttpResponse::Ok()
         .content_type("text/plain")
@@ -54,7 +57,7 @@ pub async fn login(user: Json<User>) -> HttpResponse {
 pub async fn record(record: Json<Record>) -> HttpResponse {
     HttpResponse::Ok().content_type("text/plain").body(
         serde_json::to_string(&Record::new(
-            User::new("肖记超".to_string(), "JcMeet2000".to_string()),
+            User::new(1, "肖记超".to_string(), "JcMeet2000".to_string()),
             History::new(
                 "2020/11/21".to_string(),
                 CheckerBoard::new(10, 20, HashMap::new()),
