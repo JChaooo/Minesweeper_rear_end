@@ -20,6 +20,20 @@ impl<T: Serialize> ResData<T> {
     pub fn new(state: STATE, data: T) -> Self {
         ResData { state, data }
     }
+    // 如果数据处理成功，调用OK，返回OK以及数据
+    pub fn OK(data: T) -> Self {
+        ResData {
+            state: STATE::OK,
+            data,
+        }
+    }
+    // 如果数据处理出错，调用ERR，
+    pub fn ERR(msg: T) -> Self {
+        ResData {
+            state: STATE::ERR,
+            data: msg,
+        }
+    }
     // // ResData转换成json
     // pub fn to_json(self) -> String {
     //     serde_json::to_string(&self).unwrap()

@@ -1,11 +1,8 @@
 use std::collections::HashMap;
 
 use crate::{
-    entity::{
-        checkerboard::CheckerBoard,
-        record::{History, Record},
-        user::User,
-    },
+    database,
+    entity::{checkerboard::CheckerBoard, record::Record, user::User},
     result::{ResData, STATE},
 };
 use actix_web::{
@@ -41,30 +38,18 @@ pub async fn index() -> HttpResponse {
 // 接收Json对象，注意要使用.service()注册到APP里面去
 #[post("/login")]
 pub async fn login(request: HttpRequest, user: web::Json<Value>) -> HttpResponse {
-    // pub async fn login(user: web::Json<Value>) -> HttpResponse {
-    println!("user是:{:?}", user);
-    println!("user是:{:?}", request);
-    let user_id = user.get("id").unwrap();
-    println!("UserId是：{}", user_id);
     // TODO 以下三行代码可以尝试使用宏来复用
     HttpResponse::Ok()
         .content_type("text/plain")
-        .body(serde_json::to_string(&user).unwrap())
+        .body(serde_json::to_string(&User::login(user)).unwrap())
 }
 
 // 保存游戏记录
 #[get("/record")]
 pub async fn record(record: Json<Record>) -> HttpResponse {
-    HttpResponse::Ok().content_type("text/plain").body(
-        serde_json::to_string(&Record::new(
-            User::new(1, "肖记超".to_string(), "JcMeet2000".to_string()),
-            History::new(
-                "2020/11/21".to_string(),
-                CheckerBoard::new(10, 20, HashMap::new()),
-            ),
-        ))
-        .unwrap(),
-    )
+    HttpResponse::Ok()
+        .content_type("text/plain")
+        .body(serde_json::to_string("hhhh").unwrap())
 }
 
 #[actix_web::main]
