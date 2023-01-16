@@ -1,12 +1,11 @@
-use std::f32::consts::E;
-
-use actix_web::{web, HttpResponse};
+use actix_web::web;
 use serde::{Deserialize, Serialize};
-use serde_json::{Result, Value};
+use serde_json::Value;
 
-use crate::{database, result::ResData};
-
-use super::record::Record;
+use crate::{
+    database,
+    result::{ResData, DATA},
+};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct User {
@@ -19,8 +18,8 @@ impl User {
     pub fn new(id: i32, name: String, password: String) -> Self {
         User { id, name, password }
     }
-
-    pub fn login(user: web::Json<Value>) -> ResData<String> {
+    // 用户登录
+    pub fn login(user: web::Json<Value>) -> ResData<DATA<User>> {
         let user = User {
             id: -1,
             name: user.get("name").unwrap().to_string(),
@@ -30,19 +29,21 @@ impl User {
             Ok(result) => {
                 if result.password == user.password {
                     // 登录成功
-                    ResData::OK("登录成功！".to_string())
+                    ResData::ok(DATA::DATA(result))
                 } else {
-                    ResData::ERR("密码错误！".to_string())
+                    ResData::err(DATA::MSG("密码错误".to_string()))
                 }
             }
-            Err(err) => {
+            Err(_err) => {
                 // 没查询到用户，调用新增用户方法
                 match database::insert_user(&user) {
-                    Ok(result) => {
+                    Ok(_result) => {
                         // 注册成功，成功登录
-                        ResData::OK("注册后登录！".to_string())
+                        ResData::ok(DATA::DATA(
+                            database::select_user_by_name(&user.name).unwrap(),
+                        ))
                     }
-                    Err(err) => ResData::ERR("登录失败:".to_string() + &err.to_string()),
+                    Err(err) => ResData::err(DATA::MSG(format!("登录出错啦：{:#?}", err))),
                 }
             }
         }

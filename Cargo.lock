@@ -790,6 +790,7 @@ name = "rear_end"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "rand",
  "rusqlite",
  "serde",
  "serde_json",
